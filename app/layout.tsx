@@ -1,8 +1,7 @@
-import "@radix-ui/themes/styles.css";
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { Theme } from '@radix-ui/themes'
+import { HeroUIProvider } from '@heroui/react';
 import Navbar from './Navbar'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -20,10 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Theme accentColor="purple" grayColor="mauve">
             <Navbar/>
-            <main>{children}</main>
-          </Theme>
+            <HeroUIProvider>{children}</HeroUIProvider>
         </body>
     </html>
   )

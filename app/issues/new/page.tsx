@@ -1,4 +1,3 @@
-// app/issues/new/page.tsx
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -12,26 +11,36 @@ import {
   Input,
   Textarea,
   Divider,
+  Alert,
+  Spinner
 } from '@heroui/react';
+import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { createIssueSchema } from '../../validationSchema';
+import { z } from 'zod';
 
-type IssueForm = {
-  title: string;
-  description: string;
-};
+
+type IssueForm = z.infer<typeof createIssueSchema>;
 
 export default function NewIssuePage() {
   const router = useRouter();
+  const [error, setError] = useState('');
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<IssueForm>({ defaultValues: { title: '', description: '' } });
+  } = useForm<IssueForm>({ resolver: zodResolver(createIssueSchema) });
 
   const onSubmit = async (data: IssueForm) => {
-    await axios.post('/api/issues', data);
-    reset();
-    router.push('/issues');
+    try {
+      setError('');
+      await axios.post('/api/issues', data);
+      reset();
+      router.push('/issues');
+    } catch (error) {
+      setError('Failed to create issue. Please try again.');
+    }
   };
 
   return (
@@ -48,7 +57,12 @@ export default function NewIssuePage() {
 
         <Divider className="bg-blue-100" />
 
-        <CardBody className="py-6">
+        <CardBody className="py-6 space-y-5">
+          {/* Show error alert if there's an error */}
+          {error && (
+            <Alert color="danger" title={error} className="w-full" />
+          )}
+
           <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
             {/* Title */}
             <Input
@@ -86,14 +100,21 @@ export default function NewIssuePage() {
             />
 
             <Button
-              type="submit"
-              color="primary"
-              variant="shadow"
-              radius="lg"
-              isLoading={isSubmitting}
-              className="w-full"
-            >
-              {isSubmitting ? 'Submitting…' : 'Submit Issue'}
+                type="submit"
+                color="primary"
+                variant="shadow"
+                radius="lg"
+                className="w-full flex items-center justify-center"
+                disabled={isSubmitting}
+                >
+                {isSubmitting ? (
+                    <>
+                    <Spinner size="sm" color="white" /> {/* Spinner */}
+                    <span className="ml-2">Submitting…</span>
+                    </>
+                ) : (
+                    "Submit Issue"
+                )}
             </Button>
           </form>
         </CardBody>

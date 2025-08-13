@@ -109,7 +109,7 @@ export default function NewIssuePage() {
                 >
                 {isSubmitting ? (
                     <>
-                    <Spinner size="sm" color="white" /> {/* Spinner */}
+                    <Spinner size="sm" color="white" /> 
                     <span className="ml-2">Submitting…</span>
                     </>
                 ) : (

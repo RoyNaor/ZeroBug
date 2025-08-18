@@ -117,14 +117,6 @@ export default function AppNavbar() {
                   }
                 }}
               >
-                <DropdownItem
-                  key="profile"
-                  as={NextLink}
-                  href="/profile"
-                  showDivider
-                >
-                  Profile
-                </DropdownItem>
                 <DropdownItem key="logout" color="danger">
                   Log out
                 </DropdownItem>
@@ -132,7 +124,6 @@ export default function AppNavbar() {
             </Dropdown>
           </NavbarItem>
         ) : (
-          // If you truly want NOTHING when logged out, remove this block.
           <NavbarItem className="hidden sm:flex">
             <Button as={NextLink} href="/signin" variant="flat">
               Sign in

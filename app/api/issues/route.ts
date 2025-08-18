@@ -49,3 +49,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
+export async function GET(req: Request) {
+  try {
+    const issues = await prisma.issue.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { assignee: true },
+    });
+
+    return NextResponse.json(issues, { status: 200 });
+  } catch (err) {
+    console.error('GET /api/issues error:', err);
+    return NextResponse.json({ error: 'Failed to load issues' }, { status: 500 });
+  }
+}

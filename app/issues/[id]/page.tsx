@@ -2,15 +2,23 @@
 import { prisma } from '@/prisma/client';
 import Link from 'next/link';
 import {
-  Card, CardHeader, CardBody, CardFooter, Divider, Chip, Button, Tooltip,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  Divider,
+  Chip,
+  Button,
+  Tooltip,
+  User,
 } from '@heroui/react';
 import { notFound } from 'next/navigation';
 import { AiFillBug } from 'react-icons/ai';
+import { FiUser } from 'react-icons/fi';
 import DeleteIssueButton from '../../components/DeleteIssueButton';
 
-
 interface Props {
-  params: Promise<{ id: string }>; 
+  params: Promise<{ id: string }>;
 }
 
 const statusColor: Record<'OPEN' | 'IN_PROGRESS' | 'CLOSED', 'warning' | 'primary' | 'success'> = {
@@ -20,17 +28,25 @@ const statusColor: Record<'OPEN' | 'IN_PROGRESS' | 'CLOSED', 'warning' | 'primar
 };
 
 const fmt = new Intl.DateTimeFormat('en-GB', {
-  year: 'numeric', month: '2-digit', day: '2-digit',
-  hour: '2-digit', minute: '2-digit',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
   timeZone: 'UTC',
 });
 
 export default async function IssueDetailPage(props: Props) {
-  const { id } = await props.params;      
+  const { id } = await props.params;
   const issueId = Number(id);
   if (!Number.isFinite(issueId)) notFound();
 
-  const issue = await prisma.issue.findUnique({ where: { id: issueId } });
+  // include assignee relation
+  const issue = await prisma.issue.findUnique({
+    where: { id: issueId },
+    include: { assignee: true },
+  });
+
   if (!issue) notFound();
 
   return (
@@ -47,18 +63,48 @@ export default async function IssueDetailPage(props: Props) {
                 </div>
               </div>
             </div>
-            <Chip color={statusColor[issue.status]} variant="flat" size="md" className="font-medium">
+            <Chip
+              color={statusColor[issue.status]}
+              variant="flat"
+              size="md"
+              className="font-medium"
+            >
               {issue.status.replace('_', ' ')}
             </Chip>
           </CardHeader>
 
           <Divider />
 
-          <CardBody className="py-6">
-            <h2 className="mb-2 text-sm font-semibold text-gray-700">Description</h2>
-            {issue.description
-              ? <p className="whitespace-pre-wrap leading-7 text-gray-800">{issue.description}</p>
-              : <p className="italic text-gray-500">No description provided.</p>}
+          <CardBody className="py-6 space-y-6">
+            <div>
+              <h2 className="mb-2 text-sm font-semibold text-gray-700">Description</h2>
+              {issue.description ? (
+                <p className="whitespace-pre-wrap leading-7 text-gray-800">
+                  {issue.description}
+                </p>
+              ) : (
+                <p className="italic text-gray-500">No description provided.</p>
+              )}
+            </div>
+
+            <div>
+              <h2 className="mb-2 text-sm font-semibold text-gray-700">Assigned To</h2>
+              {issue.assignee ? (
+                <User
+                  name={issue.assignee.name ?? 'Unknown'}
+                  description={issue.assignee.email ?? ''}
+                  avatarProps={{
+                    radius: 'lg',
+                    src: issue.assignee.image ?? undefined,
+                    fallback: <FiUser className="text-default-400" />,
+                  }}
+                />
+              ) : (
+                <Chip size="sm" variant="flat" className="text-default-600">
+                  Unassigned
+                </Chip>
+              )}
+            </div>
           </CardBody>
 
           <Divider />
@@ -70,10 +116,17 @@ export default async function IssueDetailPage(props: Props) {
             </div>
             <div className="flex items-center gap-2">
               <Tooltip content="Back to Issues" closeDelay={0}>
-                <Button as={Link} href="/issues" variant="flat">Back</Button>
+                <Button as={Link} href="/issues" variant="flat">
+                  Back
+                </Button>
               </Tooltip>
               <Tooltip content="Edit this issue" closeDelay={0}>
-                <Button as={Link} href={`/issues/${issue.id}/edit`} color="primary" variant="shadow">
+                <Button
+                  as={Link}
+                  href={`/issues/${issue.id}/edit`}
+                  color="primary"
+                  variant="shadow"
+                >
                   Edit
                 </Button>
               </Tooltip>

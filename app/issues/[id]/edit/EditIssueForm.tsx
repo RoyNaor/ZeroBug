@@ -8,12 +8,16 @@ import {
 } from '@heroui/react';
 import { AiFillBug } from 'react-icons/ai';
 import axios from 'axios';
+import AssigneeSelect from '@/app/components/AssigneeSelect';
 
 type Issue = {
   id: number;
   title: string;
   description: string | null;
   status: 'OPEN' | 'IN_PROGRESS' | 'CLOSED';
+  // one of these is enough; include both for convenience:
+  assignedTo?: string | null; // FK to User.id (optional)
+  assignee?: { id: string; name: string | null; email: string | null; image: string | null } | null;
 };
 
 export default function EditIssueForm({ issue }: { issue: Issue }) {
@@ -22,6 +26,9 @@ export default function EditIssueForm({ issue }: { issue: Issue }) {
   const [title, setTitle] = useState(issue.title);
   const [description, setDescription] = useState(issue.description ?? '');
   const [status, setStatus] = useState<Issue['status']>(issue.status);
+  const [assigneeId, setAssigneeId] = useState<string | null>(
+    issue.assignee?.id ?? issue.assignedTo ?? null
+  );
   const [isSaving, setIsSaving] = useState(false);
 
   const statusColors = {
@@ -34,8 +41,14 @@ export default function EditIssueForm({ issue }: { issue: Issue }) {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await axios.patch(`/api/issues/${issue.id}`, { title, description, status });
-      router.push(`/issues/${issue.id}`); 
+      await axios.patch(`/api/issues/${issue.id}`, {
+        title,
+        description: description || null,
+        status,
+        // include assigneeId (null = unassign)
+        assigneeId: assigneeId ?? null,
+      });
+      router.push(`/issues/${issue.id}`);
     } catch (err) {
       console.error(err);
     } finally {
@@ -49,9 +62,7 @@ export default function EditIssueForm({ issue }: { issue: Issue }) {
         <Card className="border border-gray-200 shadow-lg">
           <CardHeader className="flex items-center gap-3 py-6">
             <AiFillBug className="text-blue-600 text-3xl" />
-            <h1 className="text-2xl font-semibold text-gray-900">
-              Edit Issue
-            </h1>
+            <h1 className="text-2xl font-semibold text-gray-900">Edit Issue</h1>
           </CardHeader>
 
           <Divider />
@@ -78,29 +89,52 @@ export default function EditIssueForm({ issue }: { issue: Issue }) {
                 color="primary"
               />
 
+              {/* Status */}
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">
                   Status
                 </label>
                 <Select
-                    selectedKeys={[status]}        
-                    onSelectionChange={(keys) =>
-                        setStatus(Array.from(keys)[0] as Issue['status'])
-                    }
-                    className="max-w-xs"
-                    variant="bordered"
-                    radius="lg"
-                    label="Status"
-                    >
-                    {(['OPEN', 'IN_PROGRESS', 'CLOSED'] as const).map((s) => (
-                        <SelectItem key={s} textValue={s}>
-                        <Chip color={statusColors[s]} variant="flat">
-                            {s.replace('_', ' ')}
-                        </Chip>
-                        </SelectItem>
-                    ))}
-                    </Select>
+                  selectedKeys={[status]}
+                  onSelectionChange={(keys) =>
+                    setStatus(Array.from(keys)[0] as Issue['status'])
+                  }
+                  className="max-w-xs"
+                  variant="bordered"
+                  radius="lg"
+                  label="Status"
+                >
+                  {(['OPEN', 'IN_PROGRESS', 'CLOSED'] as const).map((s) => (
+                    <SelectItem key={s} textValue={s}>
+                      <Chip color={statusColors[s]} variant="flat">
+                        {s.replace('_', ' ')}
+                      </Chip>
+                    </SelectItem>
+                  ))}
+                </Select>
+              </div>
 
+              {/* Assignee */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Assignee <span className="text-neutral-400">(optional)</span>
+                </label>
+                <div className="flex items-center gap-3">
+                  <AssigneeSelect
+                    value={assigneeId}
+                    onChange={(user) => setAssigneeId(user?.id ?? null)}
+                    placeholder="Assign user"
+                  />
+                  {assigneeId && (
+                    <Button
+                      variant="flat"
+                      size="sm"
+                      onClick={() => setAssigneeId(null)}
+                    >
+                      Clear
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardBody>
 

@@ -1,10 +1,11 @@
+// app/api/issues/[id]/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/prisma/client";
-import { updateIssueSchema } from "@/app/validationSchema"; 
+import { updateIssueSchema } from "@/app/validationSchema";
 
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> } // Next.js 15
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -22,15 +23,42 @@ export async function PATCH(
       );
     }
 
-    const data = parsed.data;
+    const { assigneeId, ...rest } = parsed.data;
 
-    if ("description" in data && data.description === "") {
-      (data as any).description = null;
+    // Normalize empty string description to null
+    if ("description" in rest && rest.description === "") {
+      (rest as any).description = null;
+    }
+
+    // Build update data
+    const updateData: any = { ...rest };
+
+    // Only change assignment if the client sent assigneeId (can be null to unassign)
+    if ("assigneeId" in parsed.data) {
+      if (assigneeId == null || assigneeId === "") {
+        updateData.assignedTo = null; // unassign
+      } else {
+        // Validate the user exists
+        const exists = await prisma.user.findUnique({
+          where: { id: assigneeId },
+          select: { id: true },
+        });
+        if (!exists) {
+          return NextResponse.json(
+            { error: "Assignee not found" },
+            { status: 400 }
+          );
+        }
+        updateData.assignedTo = assigneeId; // assign
+      }
     }
 
     const updated = await prisma.issue.update({
       where: { id: issueId },
-      data,
+      data: updateData,
+      include: {
+        assignee: { select: { id: true, name: true, email: true, image: true } },
+      },
     });
 
     return NextResponse.json(updated, { status: 200 });

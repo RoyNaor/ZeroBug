@@ -21,7 +21,6 @@ export default function CreateIssueButton() {
   return (
     <Button
       color="primary"
-      variant="shadow"
       onPress={go}
       isLoading={isPending}            
       disabled={isPending}

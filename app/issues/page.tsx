@@ -16,7 +16,6 @@ export default async function IssuesPage() {
       <div className="mx-auto max-w-5xl">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-3xl font-bold text-gray-900">Issues</h1>
-          <CreateIssueButton />
         </div>
         <IssuesTable issues={safeIssues} />
       </div>

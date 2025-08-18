@@ -12,13 +12,12 @@ import {
   Textarea,
   Divider,
   Alert,
-  Spinner
+  Spinner,
 } from '@heroui/react';
 import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createIssueSchema } from '../../validationSchema';
 import { z } from 'zod';
-
 
 type IssueForm = z.infer<typeof createIssueSchema>;
 
@@ -38,29 +37,33 @@ export default function NewIssuePage() {
       await axios.post('/api/issues', data);
       reset();
       router.push('/issues');
-    } catch (error) {
+    } catch {
       setError('Failed to create issue. Please try again.');
     }
   };
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center p-6 bg-gradient-to-b from-blue-50 to-white">
-      <Card className="w-full max-w-xl shadow-lg border border-blue-100">
-        <CardHeader className="flex flex-col items-center gap-2 py-6">
-          <h2 className="text-3xl font-semibold bg-gradient-to-r from-blue-800 to-blue-500 bg-clip-text text-transparent">
-            Create New Issue
-          </h2>
-          <p className="text-sm text-blue-600/80">
-            Fill the details below and submit
-          </p>
+    <div className="min-h-[70vh] bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-6">
+      <Card className="w-full max-w-2xl shadow-sm border border-neutral-200 rounded-2xl">
+        <CardHeader className="py-6">
+          <div className="w-full">
+            <p className="text-xs uppercase tracking-wider text-neutral-500">
+              Issue
+            </p>
+            <h2 className="mt-1 text-2xl font-semibold text-neutral-900">
+              Create new issue
+            </h2>
+            <p className="mt-1 text-sm text-neutral-500">
+              Provide a concise title and a clear description.
+            </p>
+          </div>
         </CardHeader>
 
-        <Divider className="bg-blue-100" />
+        <Divider className="bg-neutral-200" />
 
-        <CardBody className="py-6 space-y-5">
-          {/* Show error alert if there's an error */}
+        <CardBody className="py-6">
           {error && (
-            <Alert color="danger" title={error} className="w-full" />
+            <Alert color="danger" title={error} className="mb-5" />
           )}
 
           <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
@@ -68,54 +71,54 @@ export default function NewIssuePage() {
             <Input
               label="Title"
               placeholder="Short, clear title"
-              radius="lg"
               variant="bordered"
-              color="primary"
+              size="lg"
               isInvalid={!!errors.title}
               errorMessage={errors.title?.message}
               {...register('title', { required: 'Title is required' })}
               classNames={{
+                label: 'text-neutral-700',
                 inputWrapper:
-                  'border-blue-200 data-[hover=true]:border-blue-300',
+                  'border-neutral-300 data-[hover=true]:border-neutral-400',
               }}
             />
 
             {/* Description */}
             <Textarea
               label="Description"
-              placeholder="Describe the issue…"
+              placeholder="Describe the issue...."
               minRows={6}
-              radius="lg"
               variant="bordered"
-              color="primary"
+              size="lg"
               isInvalid={!!errors.description}
               errorMessage={errors.description?.message}
-              {...register('description', {
-                required: 'Description is required',
-              })}
+              {...register('description', { required: 'Description is required' })}
               classNames={{
+                label: 'text-neutral-700',
                 inputWrapper:
-                  'border-blue-200 data-[hover=true]:border-blue-300',
+                  'border-neutral-300 data-[hover=true]:border-neutral-400',
               }}
             />
 
-            <Button
+            <div className="pt-2">
+              <Button
                 type="submit"
                 color="primary"
-                variant="shadow"
+                size="lg"
                 radius="lg"
-                className="w-full flex items-center justify-center"
-                disabled={isSubmitting}
-                >
+                className="w-full font-semibold shadow-sm"
+                isDisabled={isSubmitting}
+              >
                 {isSubmitting ? (
-                    <>
-                    <Spinner size="sm" color="white" /> 
-                    <span className="ml-2">Submitting…</span>
-                    </>
+                  <span className="inline-flex items-center gap-2">
+                    <Spinner size="sm" color="white" />
+                    Submitting…
+                  </span>
                 ) : (
-                    "Submit Issue"
+                  'Submit issue'
                 )}
-            </Button>
+              </Button>
+            </div>
           </form>
         </CardBody>
       </Card>

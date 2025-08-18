@@ -50,7 +50,7 @@ export default function EditIssueForm({ issue }: { issue: Issue }) {
           <CardHeader className="flex items-center gap-3 py-6">
             <AiFillBug className="text-blue-600 text-3xl" />
             <h1 className="text-2xl font-semibold text-gray-900">
-              Edit Issue #{issue.id}
+              Edit Issue
             </h1>
           </CardHeader>
 

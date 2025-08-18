@@ -2,7 +2,7 @@
 
 import React from 'react';
 import NextLink from 'next/link';
-import {usePathname} from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   Navbar,
   NavbarBrand,
@@ -13,12 +13,24 @@ import {
   NavbarMenuItem,
   Link,
   Button,
+  User as HeroUser,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Skeleton,
 } from '@heroui/react';
-import {AiFillBug} from 'react-icons/ai';
+import { AiFillBug } from 'react-icons/ai';
+import { FiUser } from 'react-icons/fi';
+import { useSession, signOut } from 'next-auth/react';
 
 export default function AppNavbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const { data: session, status } = useSession();
+
+  const HIDE_NAVBAR_ON = ['/signin', '/signup'];
+  if (HIDE_NAVBAR_ON.includes(pathname)) return <></>; 
 
   const links = [
     { label: 'Dashboard', href: '/' },
@@ -26,7 +38,9 @@ export default function AppNavbar() {
   ];
 
   const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`);
+    href === '/'
+      ? pathname === '/'
+      : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <Navbar
@@ -34,7 +48,7 @@ export default function AppNavbar() {
       onMenuOpenChange={setIsMenuOpen}
       className="bg-white/80 backdrop-blur border-b border-gray-200 text-gray-800"
     >
-      {/* Left side: hamburger + brand */}
+      {/* Left: burger + brand */}
       <NavbarContent>
         <NavbarMenuToggle
           aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
@@ -46,7 +60,7 @@ export default function AppNavbar() {
         </NavbarBrand>
       </NavbarContent>
 
-      {/* Center links (desktop only) */}
+      {/* Center links (desktop) */}
       <NavbarContent className="hidden sm:flex gap-6" justify="center">
         {links.map(({ label, href }) => {
           const active = isActive(href);
@@ -70,21 +84,64 @@ export default function AppNavbar() {
         })}
       </NavbarContent>
 
-      {/* Right side buttons */}
+      {/* Right: user menu (desktop) */}
       <NavbarContent justify="end">
-        <NavbarItem className="hidden lg:flex">
-          <Link as={NextLink} href="/login" className="text-gray-700 hover:text-gray-900">
-            Login
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Button as={NextLink} href="/signup" color="primary" variant="flat" className="text-gray-900">
-            Sign Up
-          </Button>
-        </NavbarItem>
+        {status === 'loading' && (
+          <NavbarItem>
+            <Skeleton className="rounded-full h-10 w-10" />
+          </NavbarItem>
+        )}
+
+        {status === 'authenticated' && session?.user ? (
+          <NavbarItem>
+            <Dropdown placement="bottom-end">
+              <DropdownTrigger>
+                <button className="outline-none">
+                  <HeroUser
+                    name={session.user.name ?? session.user.email ?? 'User'}
+                    description={session.user.email ?? undefined}
+                    className="transition-transform"
+                    avatarProps={{
+                      src: session.user.image ?? undefined,
+                      radius: 'full',
+                      fallback: <FiUser className="text-gray-500" />,
+                    }}
+                  />
+                </button>
+              </DropdownTrigger>
+              <DropdownMenu
+                aria-label="User menu"
+                onAction={(key) => {
+                  if (key === 'logout') {
+                    signOut({ callbackUrl: '/signin' });
+                  }
+                }}
+              >
+                <DropdownItem
+                  key="profile"
+                  as={NextLink}
+                  href="/profile"
+                  showDivider
+                >
+                  Profile
+                </DropdownItem>
+                <DropdownItem key="logout" color="danger">
+                  Log out
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </NavbarItem>
+        ) : (
+          // If you truly want NOTHING when logged out, remove this block.
+          <NavbarItem className="hidden sm:flex">
+            <Button as={NextLink} href="/signin" variant="flat">
+              Sign in
+            </Button>
+          </NavbarItem>
+        )}
       </NavbarContent>
 
-      {/* Mobile menu content */}
+      {/* Mobile menu */}
       <NavbarMenu>
         {links.map(({ label, href }) => (
           <NavbarMenuItem key={href} isActive={isActive(href)}>
@@ -99,23 +156,7 @@ export default function AppNavbar() {
             </Link>
           </NavbarMenuItem>
         ))}
-        <NavbarMenuItem>
-          <Link as={NextLink} href="/login" size="lg" onClick={() => setIsMenuOpen(false)}>
-            Login
-          </Link>
-        </NavbarMenuItem>
-        <NavbarMenuItem>
-          <Button
-            as={NextLink}
-            href="/signup"
-            color="primary"
-            variant="flat"
-            className="w-full"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Sign Up
-          </Button>
-        </NavbarMenuItem>
+
       </NavbarMenu>
     </Navbar>
   );

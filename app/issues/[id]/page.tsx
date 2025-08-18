@@ -6,7 +6,7 @@ import {
 } from '@heroui/react';
 import { notFound } from 'next/navigation';
 import { AiFillBug } from 'react-icons/ai';
-import DeleteIssueButton from './DeleteIssueButton';
+import DeleteIssueButton from '../../components/DeleteIssueButton';
 
 
 interface Props {

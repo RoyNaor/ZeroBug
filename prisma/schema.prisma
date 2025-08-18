@@ -17,6 +17,8 @@ model Issue {
   status      Status   @default(OPEN)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  assignedTo  String?  @db.VarChar(255)
+  assignee    User?    @relation(name: "UserIssues", fields: [assignedTo], references: [id], onDelete: SetNull)
 } 
 
 enum Status {
@@ -31,13 +33,14 @@ model User {
   email         String   @unique
   emailVerified DateTime?
   image         String?
-  passwordHash  String   // <— for email+password
+  passwordHash  String   
 
   accounts      Account[]
   sessions      Session[]
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  assignedIssues        Issue[]  @relation("UserIssues")
 }
 
 model Account {

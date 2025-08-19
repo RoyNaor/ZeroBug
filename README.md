@@ -28,11 +28,12 @@ The project structure follows the Next.js App Router conventions and was bootstr
 ---
 
 ## 📁 Project Structure
-app/ # Next.js App Router pages & routes
-prisma/ # Prisma schema & migrations
-public/ # Static assets
-middleware.ts # Auth & route protection
-next.config.js # Next.js config
-tailwind.config.ts # Tailwind config
-postcss.config.js # PostCSS config
+
+- app/ # Next.js App Router pages & routes
+- prisma/ # Prisma schema & migrations
+- public/ # Static assets
+- middleware.ts # Auth & route protection
+- next.config.js # Next.js config
+- tailwind.config.ts # Tailwind config
+- postcss.config.js # PostCSS config
 

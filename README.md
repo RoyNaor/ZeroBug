@@ -1,34 +1,31 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ZeroBug — Issue Tracker
 
-## Getting Started
+A full-stack issue tracker built with **Next.js (App Router)**, **TypeScript**, **Prisma**, **MySQL**, **NextAuth**, **TailwindCSS** and **HeroUI**.  
+The project structure follows the Next.js App Router conventions and was bootstrapped with `create-next-app`.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+## ✨ Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- 🔐 Authentication with **NextAuth** (credentials)
+- 👥 User management & protected routes via middleware
+- 🐞 Full Issues CRUD (create, list, edit, delete)
+- 👤 Assign issues to users
+- 🎨 UI with **TailwindCSS** + **HeroUI**
+- 🗃️ **Prisma ORM** with **MySQL** backend
+- ⚙️ Configured for local development & easy deploy
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## 🧱 Tech Stack
 
-## Learn More
+- **Framework:** Next.js (App Router), React, TypeScript  
+- **UI:** TailwindCSS, HeroUI  
+- **Auth:** NextAuth (JWT)  
+- **Database:** MySQL + Prisma ORM  
+- **Tooling:** ESLint, PostCSS, npm/yarn/pnpm
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.

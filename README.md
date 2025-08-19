@@ -52,5 +52,21 @@ git clone https://github.com/RoyNaor/ZeroBug.git
 cd ZeroBug
 npm install
 # or: pnpm install / yarn install
+```
+### 3. Environment Variables
+- DATABASE_URL="mysql://<USER>:<PASSWORD>@localhost:3306/issues_tracker"
+- NEXTAUTH_SECRET="<generate-a-strong-random-string>"
+- NEXTAUTH_URL="http://localhost:3000"
+
+### 4. Prisma setup
+```bash
+npx prisma migrate dev
+# or if schema already matches DB
+npx prisma db push
+```
+### 5. Run the app
+```bash
+npm run dev
+```
 
 

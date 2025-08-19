@@ -37,3 +37,20 @@ The project structure follows the Next.js App Router conventions and was bootstr
 - tailwind.config.ts # Tailwind config
 - postcss.config.js # PostCSS config
 
+---
+
+## 🚀 Getting Started
+
+
+### 1. Prerequisites
+- **Node.js** 18+
+- **MySQL** 8.x (local or remote)
+
+### 2. Clone & install
+```bash
+git clone https://github.com/RoyNaor/ZeroBug.git
+cd ZeroBug
+npm install
+# or: pnpm install / yarn install
+
+
